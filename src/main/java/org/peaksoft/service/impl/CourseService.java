@@ -2,37 +2,19 @@ package org.peaksoft.service.impl;
 
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
-import org.hibernate.SessionException;
+import org.peaksoft.model.entities.Course;
 import org.peaksoft.model.entities.Student;
 import org.peaksoft.service.Service;
 import org.peaksoft.util.HibernateUtil;
 
 import java.util.List;
 
-public class StudentService  implements Service<Student> {
+public class CourseService implements Service<Course> {
     @Override
-    public void create(Student student) {
+    public void create(Course course) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             session.beginTransaction();
-            session.persist(student);
-            session.getTransaction().commit();
-        } catch (SessionException s) {
-            System.out.println(s.getMessage());
-        }
-
-    }
-
-    @Override
-    public void update(Long id,Student student) {
-        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            session.beginTransaction();
-            session.get(Student.class,id);
-            student.setName(student.getName());
-            student.setAge(student.getAge());
-            student.setGender(student.getGender());
-            student.setStudyFormat(student.getStudyFormat());
-            student.setCreatDate(student.getCreatDate());
-            session.persist(student);
+            session.persist(course);
             session.getTransaction().commit();
         } catch (HibernateException e) {
             System.out.println(e.getMessage());
@@ -41,36 +23,52 @@ public class StudentService  implements Service<Student> {
     }
 
     @Override
-    public List<Student> getAll() {
-        List<Student> students = null;
+    public void update(Long id,Course course) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             session.beginTransaction();
-            students = session.createQuery("FROM Student", Student.class).getResultList();
+            session.remove(session.get(Course.class,id));
+            course.setCourseName(course.getCourseName());
+            course.setDurationMonth(course.getDurationMonth());
+            course.setCreateDate(course.getCreateDate());
+            session.persist(course);
             session.getTransaction().commit();
         } catch (HibernateException e) {
             System.out.println(e.getMessage());
         }
-        return students;
+
     }
 
     @Override
-    public Student getById(Long id) {
-        Student student = null;
+    public List<Course> getAll() {
+        List<Course> courses = null;
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             session.beginTransaction();
-            student = session.get(Student.class, id);
+            courses = session.createQuery("FROM Course ", Course.class).getResultList();
             session.getTransaction().commit();
         } catch (HibernateException e) {
             System.out.println(e.getMessage());
         }
-        return student;
+        return courses;
+    }
+
+    @Override
+    public Course getById(Long id) {
+        Course course = new Course();
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            session.beginTransaction();
+            course = session.get(Course.class, id);
+            session.getTransaction().commit();
+        } catch (HibernateException e) {
+            System.out.println(e.getMessage());
+        }
+        return course;
     }
 
     @Override
     public String deleteById(Long id) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             session.beginTransaction();
-            session.remove(session.get(Student.class, id));
+            session.remove(session.get(Course.class, id));
             session.getTransaction().commit();
         } catch (HibernateException e) {
             System.out.println(e.getMessage());

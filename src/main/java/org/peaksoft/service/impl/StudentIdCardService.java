@@ -2,37 +2,19 @@ package org.peaksoft.service.impl;
 
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
-import org.hibernate.SessionException;
-import org.peaksoft.model.entities.Student;
+import org.peaksoft.model.entities.StudentIdCard;
 import org.peaksoft.service.Service;
 import org.peaksoft.util.HibernateUtil;
 
 import java.util.List;
 
-public class StudentService  implements Service<Student> {
-    @Override
-    public void create(Student student) {
-        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            session.beginTransaction();
-            session.persist(student);
-            session.getTransaction().commit();
-        } catch (SessionException s) {
-            System.out.println(s.getMessage());
-        }
-
-    }
+public class StudentIdCardService implements Service<StudentIdCard> {
 
     @Override
-    public void update(Long id,Student student) {
+    public void create(StudentIdCard studentIdCard) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             session.beginTransaction();
-            session.get(Student.class,id);
-            student.setName(student.getName());
-            student.setAge(student.getAge());
-            student.setGender(student.getGender());
-            student.setStudyFormat(student.getStudyFormat());
-            student.setCreatDate(student.getCreatDate());
-            session.persist(student);
+            session.persist(studentIdCard);
             session.getTransaction().commit();
         } catch (HibernateException e) {
             System.out.println(e.getMessage());
@@ -41,36 +23,51 @@ public class StudentService  implements Service<Student> {
     }
 
     @Override
-    public List<Student> getAll() {
-        List<Student> students = null;
+    public void update(Long id,StudentIdCard studentIdCard) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             session.beginTransaction();
-            students = session.createQuery("FROM Student", Student.class).getResultList();
+            session.get(StudentIdCard.class,id);
+            studentIdCard.setCreatDate(studentIdCard.getCreatDate());
+            studentIdCard.setIdentityNumber(studentIdCard.getIdentityNumber());
+            session.persist(studentIdCard);
             session.getTransaction().commit();
         } catch (HibernateException e) {
             System.out.println(e.getMessage());
         }
-        return students;
+
     }
 
     @Override
-    public Student getById(Long id) {
-        Student student = null;
+    public List<StudentIdCard> getAll() {
+        List<StudentIdCard> studentIdCards = null;
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             session.beginTransaction();
-            student = session.get(Student.class, id);
+            studentIdCards = session.createQuery("FROM StudentIdCard ", StudentIdCard.class).getResultList();
             session.getTransaction().commit();
         } catch (HibernateException e) {
             System.out.println(e.getMessage());
         }
-        return student;
+        return studentIdCards;
+    }
+
+    @Override
+    public StudentIdCard getById(Long id) {
+        StudentIdCard studentIdCard = null;
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            session.beginTransaction();
+            studentIdCard = session.get(StudentIdCard.class, id);
+            session.getTransaction().commit();
+        } catch (HibernateException e) {
+            System.out.println(e.getMessage());
+        }
+        return studentIdCard;
     }
 
     @Override
     public String deleteById(Long id) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             session.beginTransaction();
-            session.remove(session.get(Student.class, id));
+            session.remove(session.get(StudentIdCard.class, id));
             session.getTransaction().commit();
         } catch (HibernateException e) {
             System.out.println(e.getMessage());
